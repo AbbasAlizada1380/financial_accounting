@@ -10,10 +10,11 @@ import OrderManagement from "./pages/OrderManagement.jsx";
 import VendorManager from "./pages/VendorManager.jsx";
 import { Warehouse } from "lucide-react";
 import WarehouseManagement from "./pages/Warehouse.jsx";
-import StockManager from "./pages/StockManagement.jsx";
-import StockManagement from "./pages/StockManagement.jsx";
+import StockManager from "./pages/PoolManagement.jsx";
+import StockManagement from "./pages/PoolManagement.jsx";
 import SalesManagement from "./pages/SalesManagement.jsx";
 import Reporting from "./pages/Reporting";
+import PoolManagement from "./pages/PoolManagement.jsx";
 const MainContent = ({ activeComponent, setActiveComponent }) => {
   const { profile } = useSelector((state) => state.user);
 
@@ -32,8 +33,8 @@ const MainContent = ({ activeComponent, setActiveComponent }) => {
         return <Attribute />;
       case "products":
         return <ProductManager />;
-      case "StockManagement":
-        return <StockManagement />;
+      case "poolManagement":
+        return <PoolManagement />;
       case "SalesManagement":
         return <SalesManagement />;
       case "Warehouse":

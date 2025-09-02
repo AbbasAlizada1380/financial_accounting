@@ -233,10 +233,7 @@ const SalesManagement = () => {
             <strong>جمع کل: {formData.total}</strong>
           </div>
 
-          <SubmitBtn
-            className="text-white"
-            title={editingSale ? "ویرایش" : "ثبت"}
-          />
+          <SubmitBtn loading={loading} text={editingSale ? "ویرایش" : "ثبت"} />
         </form>
       )}
 
