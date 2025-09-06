@@ -78,10 +78,10 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
       roles: ["admin"],
     },
     {
-      name: "مدیریت گدام",
-      value: "StockManagement",
+      name: "مدیریت حوض",
+      value: "poolManagement",
       icon: <GiStockpiles className="text-blue-500" />,
-      roles: ["admin"],
+      roles: ["admin", "pool"],
     },
     {
       name: "مدیریت فروشات",
@@ -93,7 +93,7 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
       name: "Pool to Pool",
       value: "poolToPool",
       icon: <FaBuilding className="text-purple-500" />,
-      roles: ["admin", "pool"], // pool users can only see this + admins
+      roles: ["admin"], // pool users can only see this + admins
     },
     {
       name: "بخش",
@@ -117,7 +117,7 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
 
   // Filter items based on role
   const userRole =
-    useSelector((state) => state.user.accessToken.role) || "shop";
+    useSelector((state) => state.user.accessToken.role) || "pool";
   const accessibleComponents = allMenuItems.filter((item) =>
     item.roles.includes(userRole)
   );
