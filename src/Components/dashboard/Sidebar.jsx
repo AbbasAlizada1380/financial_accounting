@@ -28,22 +28,24 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
   const MySwal = withReactContent(Swal);
   const { currentUser } = useSelector((state) => state.user);
 
-  const handleSignOut = () => {
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "You will be logged out!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, sign out!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(signOutSuccess());
-        navigate("/sign-in");
-      }
-    });
-  };
+const handleSignOut = () => {
+  MySwal.fire({
+    title: "آیا مطمئن هستید؟",
+    text: "شما از حساب خود خارج خواهید شد!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "بله، خارج شوم!",
+    cancelButtonText: "لغو",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      dispatch(signOutSuccess());
+      navigate("/sign-in");
+    }
+  });
+};
+
 
   // Define all possible menu items
   const allMenuItems = [
@@ -51,13 +53,13 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
       name: "گزارشات",
       value: "reporting",
       icon: <FaChartLine className="text-teal-500" />,
-      roles: ["admin","shop"],
+      roles: ["admin"],
     },
     {
       name: "داشبورد",
       value: "dashboard",
       icon: <MdDashboardCustomize className="text-green-500" />,
-      roles: ["admin","shop"],
+      roles: ["admin"],
     },
     {
       name: "کمپنی",
@@ -117,7 +119,7 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
 
   // Filter items based on role
   const userRole =
-    useSelector((state) => state.user.accessToken.role) || "pool";
+    useSelector((state) => state.user.currentUser.role) || "pool";
   const accessibleComponents = allMenuItems.filter((item) =>
     item.roles.includes(userRole)
   );
@@ -139,7 +141,7 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
           to="/"
           className="text-lg font-semibold text-[#7209b7] whitespace-nowrap hidden lg:inline"
         >
-          Power Tech
+          BAND-E-AMIR
         </Link>
       </header>
 

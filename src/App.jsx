@@ -126,8 +126,8 @@ function App() {
             }
           />
           <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-            <Route path="/dashboard/*" element={<DashboardPage />} />
           <Route element={<PrivateRoute />}>
+            <Route path="/dashboard/*" element={<DashboardPage />} />
             <Route path="/shipping-details" element={<ShippingDetailsPage />} />
             <Route path="/checkout/:orderId" element={<CheckoutPage />} />
             <Route

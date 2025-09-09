@@ -5,57 +5,117 @@ import Swal from "sweetalert2";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashSharp } from "react-icons/io5";
 import SubmitBtn from "../../../utils/SubmitBtn";
-import customers from "./mockCustomers";
-
+import { formatDateTime } from "./dateformater";
+import Pagination from "./comp/Pagination";
+import Bill from "./comp/ShopBill";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const SalesManagement = () => {
   const token = useSelector((state) => state.user.accessToken);
   const [sales, setSales] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editingSale, setEditingSale] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 20; // or whatever your API page size is
   const initialForm = {
-    customer: null, // will hold full customer object
+    pool_customer: "", // only id
     items: [{ name: "", price: 0 }],
     total: 0,
   };
 
   const [formData, setFormData] = useState(initialForm);
 
-  // Fetch sales
-  const fetchSales = async () => {
+  // Fetch customers
+  const fetchCustomers = async () => {
+    let allCustomers = [];
+    let url = `${BASE_URL}/api/v1/pool/api/pools/?is_calculated=false`;
+
     try {
-      const res = await axios.get(`${BASE_URL}/api/sales`, {
+      while (url) {
+        const res = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        allCustomers = [...allCustomers, ...(res.data.results || [])];
+        url = res.data.next; // next page URL, null if no more pages
+      }
+
+      setCustomers(allCustomers);
+    } catch (err) {
+      console.error("Error fetching all customers:", err);
+      setCustomers([]); // fallback to empty array
+    }
+  };
+
+  // Fetch shops (sales)
+  const fetchSales = async (page=1) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/v1/pool/api/shops/?page=${page}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSales(res.data);
+      setSales(res.data.results || res.data); // handle pagination or array
+      setTotalItems(res.data.count)
     } catch (err) {
       console.error(err);
-      Swal.fire("خطا!", "مشکل در گرفتن لیست فروش‌ها", "error");
+    }
+  };
+  const toggleCalculated = async (sale) => {
+    if (!token) return;
+
+    const newValue = !sale.is_calculated;
+
+    try {
+      console.log(sale.id, newValue);
+      await axios.patch(
+        `${BASE_URL}/api/v1/pool/api/shops/${sale.id}/`,
+        { is_calculated: newValue },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update the local state immediately
+      setSales((prev) =>
+        prev.map((s) =>
+          s.id === sale.id ? { ...s, is_calculated: newValue } : s
+        )
+      );
+
+      Swal.fire(
+        "موفق!",
+        `وضعیت محاسبه مشتری تغییر کرد به ${newValue ? "✅" : "❌"}`,
+        "success"
+      );
+    } catch (error) {
+      console.error(error);
+      Swal.fire("خطا!", "تغییر وضعیت انجام نشد.", "error");
     }
   };
 
   useEffect(() => {
-    if (token) fetchSales();
-  }, [token]);
-
-  // Handle item change
-  const handleChange = (e, index = null) => {
-    if (index !== null) {
-      const items = [...formData.items];
-      items[index][e.target.name] =
-        e.target.name === "price" ? Number(e.target.value) : e.target.value;
-      const total = items.reduce((sum, item) => sum + (item.price || 0), 0);
-      setFormData({ ...formData, items, total });
+    if (token) {
+      fetchSales(currentPage);
+      fetchCustomers();
     }
+  }, [currentPage]);
+const handlePageChange = (page) => {
+  setCurrentPage(page);
+};
+  // Handle customer select
+  const handleCustomerChange = (e) => {
+    setFormData({ ...formData, pool_customer: Number(e.target.value) });
   };
 
-  // Select customer
-  const handleCustomerChange = (e) => {
-    const selected = customers.find((c) => c.id === Number(e.target.value));
-    setFormData({ ...formData, customer: selected });
+  // Handle item change
+  const handleChange = (e, index) => {
+    const items = [...formData.items];
+    items[index][e.target.name] =
+      e.target.name === "price" ? Number(e.target.value) : e.target.value;
+
+    const total = items.reduce((sum, item) => sum + (item.price || 0), 0);
+    setFormData({ ...formData, items, total });
   };
 
   // Add new item
@@ -80,7 +140,7 @@ const SalesManagement = () => {
 
     try {
       const payload = {
-        customer: formData.customer, // send full customer object
+        pool_customer: formData.pool_customer, // ✅ only ID
         list: formData.items.reduce(
           (acc, item) =>
             item.name ? { ...acc, [item.name]: item.price } : acc,
@@ -88,15 +148,22 @@ const SalesManagement = () => {
         ),
         total: formData.total,
       };
-      console.log("Payload:", payload);
+
+      if (!payload.pool_customer || Object.keys(payload.list).length === 0) {
+        Swal.fire("خطا!", "مشتری یا لیست کالاها نباید خالی باشد", "error");
+        setLoading(false);
+        return;
+      }
 
       if (editingSale) {
-        await axios.patch(`${BASE_URL}/api/sales/${editingSale.id}`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.patch(
+          `${BASE_URL}/api/v1/pool/api/shops/${editingSale.id}/`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         Swal.fire("موفق!", "فروش ویرایش شد", "success");
       } else {
-        await axios.post(`${BASE_URL}/api/sales`, payload, {
+        await axios.post(`${BASE_URL}/api/v1/pool/api/shops/`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         Swal.fire("موفق!", "فروش جدید اضافه شد", "success");
@@ -107,14 +174,14 @@ const SalesManagement = () => {
       setFormData(initialForm);
       fetchSales();
     } catch (err) {
-      console.error(err);
+      console.error(err.response?.data || err);
       Swal.fire("خطا!", "عملیات انجام نشد", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // Delete sale
+  // Delete
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "حذف شود؟",
@@ -127,7 +194,7 @@ const SalesManagement = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`${BASE_URL}/api/sales/${id}`, {
+        await axios.delete(`${BASE_URL}/api/v1/pool/api/shops/${id}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         Swal.fire("حذف شد!", "فروش با موفقیت حذف شد", "success");
@@ -139,14 +206,14 @@ const SalesManagement = () => {
     }
   };
 
-  // Edit sale
+  // Edit
   const handleEdit = (sale) => {
     const items = Object.entries(sale.list).map(([name, price]) => ({
       name,
       price,
     }));
     setFormData({
-      customer: sale.customer, // already object
+      pool_customer: sale.pool_customer, // ✅ id only
       items: items.length > 0 ? items : [{ name: "", price: 0 }],
       total: sale.total,
     });
@@ -158,7 +225,6 @@ const SalesManagement = () => {
     <div className="p-5">
       <h2 className="text-xl font-bold mb-4">مدیریت فروش</h2>
 
-      {/* Toggle Form */}
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
         onClick={() => {
@@ -170,7 +236,6 @@ const SalesManagement = () => {
         {formOpen ? "بستن فرم" : "افزودن فروش"}
       </button>
 
-      {/* Form */}
       {formOpen && (
         <form
           onSubmit={handleSubmit}
@@ -178,7 +243,7 @@ const SalesManagement = () => {
         >
           {/* Select customer */}
           <select
-            value={formData.customer?.id || ""}
+            value={formData.pool_customer || ""}
             onChange={handleCustomerChange}
             className="border p-2 rounded w-full"
             required
@@ -186,7 +251,7 @@ const SalesManagement = () => {
             <option value="">انتخاب مشتری</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {`${c.name} - ${c.cabinet_number}`}
               </option>
             ))}
           </select>
@@ -233,7 +298,7 @@ const SalesManagement = () => {
             <strong>جمع کل: {formData.total}</strong>
           </div>
 
-          <SubmitBtn loading={loading} text={editingSale ? "ویرایش" : "ثبت"} />
+          <SubmitBtn loading={loading} title={editingSale ? "ویرایش" : "ثبت"} />
         </form>
       )}
 
@@ -242,24 +307,26 @@ const SalesManagement = () => {
         <table className="min-w-full divide-y divide-gray-200 text-right">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-2">#</th>
+              <th className="px-4 py-2">نمبر صندق</th>
               <th className="px-4 py-2">مشتری</th>
-              <th className="px-4 py-2">مشخصات مشتری</th>
               <th className="px-4 py-2">لیست کالاها</th>
               <th className="px-4 py-2">جمع کل</th>
+              <th className="px-4 py-2">محاسبه شده؟</th>
               <th className="px-4 py-2">عملیات</th>
+              <th className="px-4 py-2">تاریخ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {sales.length > 0 ? (
+            {Array.isArray(sales) && sales.length > 0 ? (
               sales.map((sale, index) => (
                 <tr key={sale.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2">{index + 1}</td>
-                  <td className="px-4 py-2">{sale.customer?.name}</td>
-                  <td className="px-4 py-2 text-sm text-gray-600">
-                    افراد: {sale.customer?.howManyPerson}، هزینه:{" "}
-                    {sale.customer?.fee}، پرداخت: {sale.customer?.totalPay}،{" "}
-                    {sale.customer?.isCalculated ? "محاسبه شد" : "در انتظار"}
+                  <td className="px-4 py-2">
+                    {customers.find((c) => c.id === sale.pool_customer)
+                      ?.cabinet_number || "نامشخص"}
+                  </td>
+                  <td className="px-4 py-2">
+                    {customers.find((c) => c.id === sale.pool_customer)?.name ||
+                      "نامشخص"}
                   </td>
                   <td className="px-4 py-2">
                     {Object.entries(sale.list).map(([k, v]) => (
@@ -269,6 +336,18 @@ const SalesManagement = () => {
                     ))}
                   </td>
                   <td className="px-4 py-2">{sale.total}</td>
+                  <td className="px-4 py-2">
+                    <button
+                      className={`px-2 py-1 rounded ${
+                        sale.is_calculated
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-300"
+                      }`}
+                      onClick={() => toggleCalculated(sale)}
+                    >
+                      {sale.is_calculated ? "✅" : "❌"}
+                    </button>
+                  </td>
                   <td className="px-4 py-2 flex gap-3">
                     <button
                       className="text-blue-500"
@@ -282,18 +361,31 @@ const SalesManagement = () => {
                     >
                       <IoTrashSharp />
                     </button>
+                    <Bill
+                      sale={sale}
+                      customer={customers.find(
+                        (c) => c.id == sale.pool_customer
+                      )}
+                    />
                   </td>
+                  <td>{formatDateTime(sale.created_at)}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4">
+                <td colSpan="5" className="text-center py-4">
                   هیچ فروشی ثبت نشده است
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        <Pagination
+          currentPage={currentPage}
+          totalOrders={totalItems}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );
