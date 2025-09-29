@@ -28,24 +28,23 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
   const MySwal = withReactContent(Swal);
   const { currentUser } = useSelector((state) => state.user);
 
-const handleSignOut = () => {
-  MySwal.fire({
-    title: "آیا مطمئن هستید؟",
-    text: "شما از حساب خود خارج خواهید شد!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "بله، خارج شوم!",
-    cancelButtonText: "لغو",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      dispatch(signOutSuccess());
-      navigate("/sign-in");
-    }
-  });
-};
-
+  const handleSignOut = () => {
+    MySwal.fire({
+      title: "آیا مطمئن هستید؟",
+      text: "شما از حساب خود خارج خواهید شد!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "بله، خارج شوم!",
+      cancelButtonText: "لغو",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(signOutSuccess());
+        navigate("/sign-in");
+      }
+    });
+  };
 
   // Define all possible menu items
   const allMenuItems = [
@@ -80,8 +79,8 @@ const handleSignOut = () => {
       roles: ["admin"],
     },
     {
-      name: "مدیریت حوض",
-      value: "poolManagement",
+      name: "مدیریت مالی",
+      value: "financialManagement",
       icon: <GiStockpiles className="text-blue-500" />,
       roles: ["admin", "pool"],
     },
@@ -119,7 +118,9 @@ const handleSignOut = () => {
 
   // Filter items based on role
   const userRole =
-    useSelector((state) => state.user.currentUser.role) || "pool";
+    // useSelector((state) => state.user.currentUser.role)
+    // ||
+    "pool";
   const accessibleComponents = allMenuItems.filter((item) =>
     item.roles.includes(userRole)
   );
