@@ -127,7 +127,7 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
                   {component.icon}
                 </span>
                 <span className="text-base font-semibold whitespace-nowrap hidden lg:inline">
-                  {component.value === "orders" && userRole !== "admin"
+                  {component.value === "orders" 
                     ? "My Orders"
                     : component.name}
                 </span>

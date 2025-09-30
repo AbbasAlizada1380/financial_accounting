@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import data from "./data.json"
+import data from "./data.json";
 
 const IncomeManagement = () => {
   const [incomes, setIncomes] = useState(data.expense);
+  const [showform, setShowform] = useState(false);
+
   const [formData, setFormData] = useState({
     source: "",
     description: "",
@@ -40,38 +42,49 @@ const IncomeManagement = () => {
   return (
     <div className="p-4">
       <h2 className="font-bold text-xl mb-4">مدیریت عواید</h2>
-
+      <button
+        className="text-white bg bg-green-600 p-2 rounded-xl"
+        onClick={() => setShowform(!showform)}
+      >
+        add
+      </button>
       {/* Add Form */}
-      <form onSubmit={handleSubmit} className="space-y-3 mb-5">
-        <input
-          type="text"
-          placeholder="منبع"
-          value={formData.source}
-          onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-          className="border p-2 w-full rounded"
-          required
-        />
-        <input
-          type="text"
-          placeholder="توضیحات"
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-          className="border p-2 w-full rounded"
-        />
-        <input
-          type="number"
-          placeholder="مبلغ"
-          value={formData.amount}
-          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-          className="border p-2 w-full rounded"
-          required
-        />
-        <button className="bg-green-500 text-white px-4 py-2 rounded">
-          اضافه کردن
-        </button>
-      </form>
+      {showform && (
+        <form onSubmit={handleSubmit} className="space-y-3 mb-5">
+          <input
+            type="text"
+            placeholder="منبع"
+            value={formData.source}
+            onChange={(e) =>
+              setFormData({ ...formData, source: e.target.value })
+            }
+            className="border p-2 w-full rounded"
+            required
+          />
+          <input
+            type="text"
+            placeholder="توضیحات"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            className="border p-2 w-full rounded"
+          />
+          <input
+            type="number"
+            placeholder="مبلغ"
+            value={formData.amount}
+            onChange={(e) =>
+              setFormData({ ...formData, amount: e.target.value })
+            }
+            className="border p-2 w-full rounded"
+            required
+          />
+          <button className="bg-green-500 text-white px-4 py-2 rounded">
+            اضافه کردن
+          </button>
+        </form>
+      )}
 
       {/* Income Table */}
       <table className="w-full border">
