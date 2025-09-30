@@ -25,21 +25,21 @@
   "expense": [
     {
       "id": 1,
-      "category": "کرایه",
+      "source": "کرایه",
       "amount": 7000,
       "date": "2025-09-03",
       "description": "کرایه دفتر"
     },
     {
       "id": 2,
-      "category": "برق",
+      "source": "برق",
       "amount": 2500,
       "date": "2025-09-07",
       "description": "بل برق ماه سپتمبر"
     },
     {
       "id": 3,
-      "category": "حقوق کارمند",
+      "source": "حقوق کارمند",
       "amount": 10000,
       "date": "2025-09-12",
       "description": "ماهانه"

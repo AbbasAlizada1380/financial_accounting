@@ -49,58 +49,16 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
   // Define all possible menu items
   const allMenuItems = [
     {
-      name: "گزارشات",
-      value: "reporting",
-      icon: <FaChartLine className="text-teal-500" />,
-      roles: ["admin"],
-    },
-    {
       name: "داشبورد",
       value: "dashboard",
       icon: <MdDashboardCustomize className="text-green-500" />,
-      roles: ["admin"],
-    },
-    {
-      name: "کمپنی",
-      value: "category",
-      icon: <MdCategory className="text-blue-500" />,
-      roles: ["admin"],
-    },
-    {
-      name: "مشخصه",
-      value: "attribute",
-      icon: <MdEditAttributes className="text-blue-500" />,
-      roles: ["admin"],
-    },
-    {
-      name: "محصول جدید",
-      value: "products",
-      icon: <MdLocalLaundryService className="text-blue-500" />,
-      roles: ["admin"],
+      roles: ["pool"],
     },
     {
       name: "مدیریت مالی",
       value: "financialManagement",
       icon: <GiStockpiles className="text-blue-500" />,
       roles: ["admin", "pool"],
-    },
-    {
-      name: "مدیریت فروشات",
-      value: "SalesManagement",
-      icon: <FaSalesforce className="text-blue-500" />,
-      roles: ["admin", "shop"], // shop can also see this
-    },
-    {
-      name: "Pool to Pool",
-      value: "poolToPool",
-      icon: <FaBuilding className="text-purple-500" />,
-      roles: ["admin"], // pool users can only see this + admins
-    },
-    {
-      name: "بخش",
-      value: "Warehouse",
-      icon: <Warehouse className="text-blue-500" />,
-      roles: ["admin"], // warehouse access for shop & admin
     },
     {
       name: "پروفایل",
