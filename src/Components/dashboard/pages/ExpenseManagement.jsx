@@ -79,40 +79,49 @@ const ExpenseManagement = () => {
             className="border p-2 w-full rounded"
             required
           />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">
+          <button className="bg-green-500 text-white px-4 py-2 rounded">
             اضافه کردن
           </button>
         </form>
       )}
 
-      {/* Expense Table */}
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="p-2 border">منبع</th>
-            <th className="p-2 border">توضیحات</th>
-            <th className="p-2 border">مبلغ</th>
-            <th className="p-2 border">عملیات</th>
-          </tr>
-        </thead>
-        <tbody>
-          {expenses.map((item) => (
-            <tr key={item.id} className="border">
-              <td className="p-2 border">{item.source}</td>
-              <td className="p-2 border">{item.description}</td>
-              <td className="p-2 border">{item.amount} AFN</td>
-              <td className="p-2 border text-center">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded"
-                >
-                  حذف
-                </button>
-              </td>
+      <div className="overflow-x-auto shadow-md rounded-2xl mt-10">
+        {/* Expense Table */}
+        <table className="w-full border-collapse bg-white text-gray-800">
+          <thead>
+            <tr className="bg-gradient-to-l from-green-600 to-green-500 text-white">
+              <th className="p-3 text-sm border-r">منبع</th>
+              <th className="p-3 text-sm border-r">توضیحات</th>
+              <th className="p-3 text-sm border-r">مبلغ</th>
+              <th className="p-3 text-sm">عملیات</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {expenses.map((item, index) => (
+              <tr
+                key={item.id}
+                className={`${
+                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                } hover:bg-green-50 transition duration-200`}
+              >
+                <td className="p-3 border-r text-right">{item.source}</td>
+                <td className="p-3 border-r text-right">{item.description}</td>
+                <td className="p-3 border-r text-right font-semibold text-red-600">
+                  {item.amount} AFN
+                </td>
+                <td className="p-3 text-center">
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg transition"
+                  >
+                    حذف
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

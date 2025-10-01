@@ -86,22 +86,8 @@ const Sidebar = ({ setActiveComponent, activeComponent }) => {
   return (
     <div className="h-full transition-all duration-300 ease-in-out w-[70px] md:w-[80px] lg:w-64 bg-white">
       <header className="flex items-center justify-center lg:justify-start gap-5 p-5 font-bold text-xl">
-        <Link
-          to="/"
-          className="flex items-center justify-center p-2 bg-gray-300 h-16 w-16 md:h-20 md:w-20 rounded-full"
-        >
-          <img
-            src="/logo.png"
-            alt="logo"
-            className="h-12 w-12 object-contain"
-          />
-        </Link>
-        <Link
-          to="/"
-          className="text-lg font-semibold text-[#7209b7] whitespace-nowrap hidden lg:inline"
-        >
-          BAND-E-AMIR
-        </Link>
+       
+        محاسبات مالی
       </header>
 
       <ul className="mx-2  space-y-1">
