@@ -4,10 +4,12 @@ import MainContent from "./MainContent";
 import { FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
+import MobileMenu from "./mobileMenu";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://127.0.0.1:8000";
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState("dashboard");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); // lg breakpoint
   const { profile, loading } = useSelector((state) => state.user);
 
   // URL کامل عکس پروفایل را ایجاد می‌کند
@@ -17,10 +19,21 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white" dir="rtl">
-      <Sidebar
-        setActiveComponent={setActiveComponent}
-        activeComponent={activeComponent}
-      />
+      {!isMobile && (
+        <Sidebar
+          setActiveComponent={setActiveComponent}
+          activeComponent={activeComponent}
+        />
+      )}
+
+      {/* 📱 Mobile Menu (Small Screens) */}
+      {isMobile && (
+        <MobileMenu
+          setActiveComponent={setActiveComponent}
+          activeComponent={activeComponent}
+        />
+      )}
+
       <div className="flex flex-col flex-1 h-screen overflow-hidden">
         <div className="bg-gray-100 py-2 w-full flex items-center justify-between px-4 shadow-sm">
           {/* بخش پروفایل کاربر و خوش آمدگویی */}
