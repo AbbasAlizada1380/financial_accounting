@@ -15,10 +15,8 @@ const IncomeManagement = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const newIncome = { ...formData, id: Date.now() };
     setIncomes([...incomes, newIncome]);
-
     Swal.fire("موفقیت", "درآمد اضافه شد", "success");
     setFormData({ source: "", description: "", amount: "", type: "income" });
   };
