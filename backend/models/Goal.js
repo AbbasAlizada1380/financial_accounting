@@ -2,13 +2,13 @@ const { DataTypes } = require('sequelize');
 const db = require('../config/db');
 const User = require('./User');
 
-const Transaction = db.define('Transaction', {
+const Goal = db.define('Goal', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
     },
-    description: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -16,7 +16,7 @@ const Transaction = db.define('Transaction', {
             len: [1, 255]
         }
     },
-    amount: {
+    targetAmount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         validate: {
@@ -24,51 +24,47 @@ const Transaction = db.define('Transaction', {
             min: 0.01
         }
     },
-    type: {
-        type: DataTypes.ENUM('income', 'expense'),
+    savedAmount: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+        validate: {
+            isDecimal: true,
+            min: 0
+        }
+    },
+    deadline: {
+        type: DataTypes.DATE,
         allowNull: false,
+        validate: {
+            isDate: true,
+            isAfter: new Date().toISOString().split('T')[0]
+        }
     },
     category: {
         type: DataTypes.STRING,
-        defaultValue: 'General',
+        defaultValue: 'Savings',
         validate: {
             len: [0, 100]
         }
     },
-    date: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+    color: {
+        type: DataTypes.STRING,
+        defaultValue: '#3B82F6',
         validate: {
-            isDate: true
+            is: /^#[0-9A-F]{6}$/i
         }
     },
-    recurring: {
+    completed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
-    },
-    recurringInterval: {
-        type: DataTypes.ENUM('daily', 'weekly', 'monthly', 'yearly'),
-        allowNull: true
     },
     notes: {
         type: DataTypes.TEXT,
         allowNull: true
     }
-}, {
-    indexes: [
-        {
-            fields: ['userId', 'date']
-        },
-        {
-            fields: ['userId', 'type']
-        },
-        {
-            fields: ['userId', 'category']
-        }
-    ]
 });
 
-User.hasMany(Transaction, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Transaction.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Goal, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Goal.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = Transaction;
+module.exports = Goal;
