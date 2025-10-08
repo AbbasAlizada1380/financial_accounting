@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getTransactions } from '../../api/transactionsApi';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { Loader2, Download, Filter, TrendingUp, TrendingDown, PieChart, BarChart3 } from 'lucide-react';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
@@ -9,6 +10,7 @@ import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, subYe
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const AnalyticsPage = () => {
+    const { t, currentLanguage } = useLanguage();
     const [timeRange, setTimeRange] = useState('6months');
     const [chartType, setChartType] = useState('line');
 
@@ -67,14 +69,14 @@ const AnalyticsPage = () => {
             income: transactions
                 .filter(tx => tx.type === 'income')
                 .reduce((acc, tx) => {
-                    const category = tx.category || 'Other Income';
+                    const category = tx.category || t('analytics.otherIncome');
                     acc[category] = (acc[category] || 0) + parseFloat(tx.amount);
                     return acc;
                 }, {}),
             expense: transactions
                 .filter(tx => tx.type === 'expense')
                 .reduce((acc, tx) => {
-                    const category = tx.category || 'General';
+                    const category = tx.category || t('analytics.general');
                     acc[category] = (acc[category] || 0) + parseFloat(tx.amount);
                     return acc;
                 }, {})
@@ -91,7 +93,7 @@ const AnalyticsPage = () => {
             labels: monthlyData.map(data => data.month),
             datasets: [
                 {
-                    label: 'Income',
+                    label: t('analytics.income'),
                     data: monthlyData.map(data => data.income),
                     borderColor: 'rgb(34, 197, 94)',
                     backgroundColor: 'rgba(34, 197, 94, 0.1)',
@@ -100,7 +102,7 @@ const AnalyticsPage = () => {
                     fill: true
                 },
                 {
-                    label: 'Expenses',
+                    label: t('analytics.expenses'),
                     data: monthlyData.map(data => data.expenses),
                     borderColor: 'rgb(239, 68, 68)',
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -122,12 +124,17 @@ const AnalyticsPage = () => {
             },
             chartData
         };
-    }, [transactions, timeRange]);
+    }, [transactions, timeRange, t]);
+
+    // RTL support for Persian
+    const isRTL = currentLanguage === 'fa';
+    const directionClass = isRTL ? 'rtl' : 'ltr';
+    const textAlignClass = isRTL ? 'text-right' : 'text-left';
 
     const StatCard = ({ title, value, change, icon, color }) => (
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
             <div className="flex items-center justify-between">
-                <div>
+                <div className={textAlignClass}>
                     <p className="text-sm font-medium text-gray-600">{title}</p>
                     <p className="text-2xl font-bold text-gray-900">{value}</p>
                     {change && (
@@ -152,27 +159,28 @@ const AnalyticsPage = () => {
     }
 
     return (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${directionClass}`}>
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Financial Analytics</h1>
-                    <p className="text-gray-600 mt-2">Deep insights into your financial performance</p>
+                <div className={textAlignClass}>
+                    <h1 className="text-3xl font-bold text-gray-900">{t('analytics.title')}</h1>
+                    <p className="text-gray-600 mt-2">{t('analytics.description')}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <select
                         value={timeRange}
                         onChange={(e) => setTimeRange(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className={`px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${isRTL ? 'text-right' : 'text-left'}`}
+                        dir={isRTL ? 'rtl' : 'ltr'}
                     >
-                        <option value="3months">Last 3 Months</option>
-                        <option value="6months">Last 6 Months</option>
-                        <option value="1year">Last Year</option>
-                        <option value="2years">Last 2 Years</option>
+                        <option value="3months">{t('analytics.last3Months')}</option>
+                        <option value="6months">{t('analytics.last6Months')}</option>
+                        <option value="1year">{t('analytics.lastYear')}</option>
+                        <option value="2years">{t('analytics.last2Years')}</option>
                     </select>
                     <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
                         <Download size={18} />
-                        Export Report
+                        {t('analytics.exportReport')}
                     </button>
                 </div>
             </div>
@@ -180,25 +188,25 @@ const AnalyticsPage = () => {
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    title="Total Income"
+                    title={t('analytics.totalIncome')}
                     value={`$${summary.totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                     icon={<TrendingUp size={24} />}
                     color="bg-green-500"
                 />
                 <StatCard
-                    title="Total Expenses"
+                    title={t('analytics.totalExpenses')}
                     value={`$${summary.totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                     icon={<TrendingDown size={24} />}
                     color="bg-red-500"
                 />
                 <StatCard
-                    title="Net Savings"
+                    title={t('analytics.netSavings')}
                     value={`$${summary.netSavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                     icon={<BarChart3 size={24} />}
                     color="bg-blue-500"
                 />
                 <StatCard
-                    title="Savings Rate"
+                    title={t('analytics.savingsRate')}
                     value={`${summary.savingsRate}%`}
                     icon={<PieChart size={24} />}
                     color="bg-purple-500"
@@ -208,7 +216,7 @@ const AnalyticsPage = () => {
             {/* Main Chart */}
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Income vs Expenses Over Time</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{t('analytics.incomeVsExpenses')}</h2>
                     <div className="flex gap-2">
                         <button
                             onClick={() => setChartType('line')}
@@ -218,7 +226,7 @@ const AnalyticsPage = () => {
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                            Line
+                            {t('analytics.line')}
                         </button>
                         <button
                             onClick={() => setChartType('bar')}
@@ -228,7 +236,7 @@ const AnalyticsPage = () => {
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                            Bar
+                            {t('analytics.bar')}
                         </button>
                     </div>
                 </div>
@@ -285,7 +293,7 @@ const AnalyticsPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Income Categories */}
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">Income Categories</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-6">{t('analytics.incomeCategories')}</h3>
                     <div className="h-80">
                         {Object.keys(categoryData.income).length > 0 ? (
                             <Doughnut
@@ -314,7 +322,7 @@ const AnalyticsPage = () => {
                             />
                         ) : (
                             <div className="flex items-center justify-center h-full text-gray-500">
-                                No income data available
+                                {t('analytics.noIncomeData')}
                             </div>
                         )}
                     </div>
@@ -322,7 +330,7 @@ const AnalyticsPage = () => {
 
                 {/* Expense Categories */}
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">Expense Categories</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-6">{t('analytics.expenseCategories')}</h3>
                     <div className="h-80">
                         {Object.keys(categoryData.expense).length > 0 ? (
                             <Doughnut
@@ -351,7 +359,7 @@ const AnalyticsPage = () => {
                             />
                         ) : (
                             <div className="flex items-center justify-center h-full text-gray-500">
-                                No expense data available
+                                {t('analytics.noExpenseData')}
                             </div>
                         )}
                     </div>
@@ -361,17 +369,27 @@ const AnalyticsPage = () => {
             {/* Monthly Breakdown Table */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
-                    <h3 className="text-lg font-bold text-gray-900">Monthly Breakdown</h3>
+                    <h3 className="text-lg font-bold text-gray-900">{t('analytics.monthlyBreakdown')}</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Income</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expenses</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Savings</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Savings Rate</th>
+                                <th className={`px-6 py-3 ${textAlignClass} text-xs font-medium text-gray-500 uppercase`}>
+                                    {t('analytics.month')}
+                                </th>
+                                <th className={`px-6 py-3 ${textAlignClass} text-xs font-medium text-gray-500 uppercase`}>
+                                    {t('analytics.income')}
+                                </th>
+                                <th className={`px-6 py-3 ${textAlignClass} text-xs font-medium text-gray-500 uppercase`}>
+                                    {t('analytics.expenses')}
+                                </th>
+                                <th className={`px-6 py-3 ${textAlignClass} text-xs font-medium text-gray-500 uppercase`}>
+                                    {t('analytics.savings')}
+                                </th>
+                                <th className={`px-6 py-3 ${textAlignClass} text-xs font-medium text-gray-500 uppercase`}>
+                                    {t('analytics.savingsRate')}
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -382,19 +400,19 @@ const AnalyticsPage = () => {
                                 
                                 return (
                                     <tr key={index} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 font-medium text-gray-900">{monthData.month}</td>
-                                        <td className="px-6 py-4 text-green-600 font-semibold">
+                                        <td className={`px-6 py-4 font-medium text-gray-900 ${textAlignClass}`}>{monthData.month}</td>
+                                        <td className={`px-6 py-4 text-green-600 font-semibold ${textAlignClass}`}>
                                             ${monthData.income.toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4 text-red-600 font-semibold">
+                                        <td className={`px-6 py-4 text-red-600 font-semibold ${textAlignClass}`}>
                                             ${monthData.expenses.toFixed(2)}
                                         </td>
                                         <td className={`px-6 py-4 font-semibold ${
                                             monthData.savings >= 0 ? 'text-blue-600' : 'text-red-600'
-                                        }`}>
+                                        } ${textAlignClass}`}>
                                             ${monthData.savings.toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className={`px-6 py-4 ${textAlignClass}`}>
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                                 savingsRate >= 0 
                                                     ? 'bg-green-100 text-green-800'

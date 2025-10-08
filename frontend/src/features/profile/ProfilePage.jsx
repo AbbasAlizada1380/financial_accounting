@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProfile, updateProfile, changePassword } from '../../api/profileApi';
 import { useForm } from 'react-hook-form';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { toast } from 'react-hot-toast';
 import { Loader2, Edit, Save, ShieldCheck, Camera, User, Mail, Calendar } from 'lucide-react';
 
@@ -9,6 +10,7 @@ const API_URL = 'http://localhost:5000';
 
 const ProfilePage = () => {
     const queryClient = useQueryClient();
+    const { t, currentLanguage } = useLanguage();
     const [photoPreview, setPhotoPreview] = useState(null);
     const [activeTab, setActiveTab] = useState('profile');
 
@@ -20,21 +22,21 @@ const ProfilePage = () => {
     const updateMutation = useMutation({
         mutationFn: updateProfile,
         onSuccess: (data) => {
-            toast.success('Profile updated successfully!');
+            toast.success(t('notifications.profileUpdated'));
             queryClient.setQueryData(['profile'], data);
             setPhotoPreview(null);
             infoForm.reset(data);
         },
-        onError: (err) => toast.error(err.response?.data?.message || 'Update failed.'),
+        onError: (err) => toast.error(err.response?.data?.message || t('notifications.updateFailed')),
     });
 
     const passwordMutation = useMutation({
         mutationFn: changePassword,
         onSuccess: () => {
-            toast.success('Password changed successfully!');
+            toast.success(t('notifications.passwordChanged'));
             passwordForm.reset();
         },
-        onError: (err) => toast.error(err.response?.data?.message || 'Failed to change password.'),
+        onError: (err) => toast.error(err.response?.data?.message || t('notifications.passwordChangeFailed')),
     });
 
     const infoForm = useForm();
@@ -61,6 +63,11 @@ const ProfilePage = () => {
         }
     };
 
+    // RTL support for Persian
+    const isRTL = currentLanguage === 'fa';
+    const directionClass = isRTL ? 'rtl' : 'ltr';
+    const textAlignClass = isRTL ? 'text-right' : 'text-left';
+
     if (isLoading) return (
         <div className="flex justify-center items-center h-64">
             <Loader2 size={48} className="animate-spin text-blue-600" />
@@ -68,11 +75,11 @@ const ProfilePage = () => {
     );
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className={`max-w-4xl mx-auto space-y-8 ${directionClass}`}>
             {/* Header */}
-            <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
-                <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
+            <div className={`text-center ${textAlignClass}`}>
+                <h1 className="text-3xl font-bold text-gray-900">{t('profile.title')}</h1>
+                <p className="text-gray-600 mt-2">{t('profile.description')}</p>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -87,7 +94,7 @@ const ProfilePage = () => {
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            Profile Information
+                            {t('profile.personalInfo')}
                         </button>
                         <button
                             onClick={() => setActiveTab('security')}
@@ -97,7 +104,7 @@ const ProfilePage = () => {
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            Security
+                            {t('profile.security')}
                         </button>
                     </nav>
                 </div>
@@ -143,45 +150,49 @@ const ProfilePage = () => {
                                 <form onSubmit={infoForm.handleSubmit(onInfoSubmit)} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.firstName')}</label>
                                             <input 
                                                 {...infoForm.register('firstName')} 
                                                 defaultValue={profile.firstName} 
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isRTL ? 'text-right' : 'text-left'}`}
+                                                dir={isRTL ? 'rtl' : 'ltr'}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.lastName')}</label>
                                             <input 
                                                 {...infoForm.register('lastName')} 
                                                 defaultValue={profile.lastName} 
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isRTL ? 'text-right' : 'text-left'}`}
+                                                dir={isRTL ? 'rtl' : 'ltr'}
                                             />
                                         </div>
                                     </div>
                                     
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.email')}</label>
                                         <div className="relative">
-                                            <Mail size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                            <Mail size={20} className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} />
                                             <input 
                                                 type="email" 
                                                 value={profile.email} 
                                                 readOnly 
-                                                className="w-full px-12 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-gray-500"
+                                                className={`w-full ${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}
+                                                dir={isRTL ? 'rtl' : 'ltr'}
                                             />
                                         </div>
-                                        <p className="text-sm text-gray-500 mt-1">Email cannot be changed</p>
+                                        <p className="text-sm text-gray-500 mt-1">{t('profile.emailCannotChange')}</p>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Account Status</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.accountStatus')}</label>
                                         <div className="relative">
-                                            <Calendar size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                            <Calendar size={20} className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} />
                                             <input 
                                                 value={profile.accountStatus} 
                                                 readOnly 
-                                                className="w-full px-12 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-gray-500 capitalize"
+                                                className={`w-full ${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-gray-500 capitalize ${isRTL ? 'text-right' : 'text-left'}`}
+                                                dir={isRTL ? 'rtl' : 'ltr'}
                                             />
                                         </div>
                                     </div>
@@ -192,7 +203,7 @@ const ProfilePage = () => {
                                         className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 transition-colors font-semibold"
                                     >
                                         {updateMutation.isPending ? <Loader2 className="animate-spin" /> : <Save size={18} />}
-                                        Save Changes
+                                        {t('common.save')} {t('common.changes')}
                                     </button>
                                 </form>
                             </div>
@@ -204,22 +215,24 @@ const ProfilePage = () => {
                         <div className="max-w-md">
                             <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.currentPassword')}</label>
                                     <input 
                                         type="password" 
                                         {...passwordForm.register('currentPassword', { required: true })} 
-                                        placeholder="Enter current password"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        placeholder={t('profile.enterCurrentPassword')}
+                                        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isRTL ? 'text-right' : 'text-left'}`}
+                                        dir={isRTL ? 'rtl' : 'ltr'}
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.newPassword')}</label>
                                     <input 
                                         type="password" 
                                         {...passwordForm.register('newPassword', { required: true, minLength: 6 })} 
-                                        placeholder="Enter new password (min. 6 characters)"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        placeholder={t('profile.enterNewPassword')}
+                                        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isRTL ? 'text-right' : 'text-left'}`}
+                                        dir={isRTL ? 'rtl' : 'ltr'}
                                     />
                                 </div>
 
@@ -229,7 +242,7 @@ const ProfilePage = () => {
                                     className="flex items-center gap-3 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-400 transition-colors font-semibold"
                                 >
                                     {passwordMutation.isPending ? <Loader2 className="animate-spin" /> : <ShieldCheck size={18} />}
-                                    Update Password
+                                    {t('profile.updatePassword')}
                                 </button>
                             </form>
                         </div>
