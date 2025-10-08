@@ -1,0 +1,77 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* RTL Support */
+[dir="rtl"] {
+  /* Fix text alignment */
+  .text-left {
+    text-align: right;
+  }
+  
+  .text-right {
+    text-align: left;
+  }
+
+  /* Fix margins and paddings */
+  .ml-1 { margin-left: 0; margin-right: 0.25rem; }
+  .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+  .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+  .ml-4 { margin-left: 0; margin-right: 1rem; }
+  .ml-6 { margin-left: 0; margin-right: 1.5rem; }
+  
+  .mr-1 { margin-right: 0; margin-left: 0.25rem; }
+  .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+  .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+  .mr-4 { margin-right: 0; margin-left: 1rem; }
+
+  /* Fix flex order */
+  .space-x-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+  
+  .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  /* Fix sidebar hover effect */
+  .hover\\:translate-x-1:hover {
+    transform: translateX(-0.25rem);
+  }
+
+  /* Fix icons positioning */
+  .left-3 {
+    left: auto;
+    right: 0.75rem;
+  }
+
+  /* Fix date picker */
+  .react-datepicker-wrapper {
+    direction: ltr;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, transform, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
