@@ -39,7 +39,9 @@
     "adding": "در حال افزودن...",
     "noDate": "بدون تاریخ",
     "noDescription": "بدون شرح",
-    "records": "رکورد"
+     "view": "مشاهده",
+    "records": "رکورد",
+    "changes": "تغییرات"
   },
   "auth": {
     "login": "ورود",
@@ -92,7 +94,7 @@
     "financialHealth": "سلامت مالی",
     "savingsRate": "نرخ پس‌انداز"
   },
-  "income": {
+ "income": {
     "title": "مدیریت درآمد",
     "description": "منابع درآمد خود را پیگیری و مدیریت کنید",
     "addNew": "افزودن درآمد جدید",
@@ -105,7 +107,10 @@
     "category": "دسته‌بندی",
     "type": "نوع",
     "recurring": "تکرار شونده",
-    "oneTime": "یک بار"
+    "oneTime": "یک بار",
+    "totalIncome": "کل درآمد",
+    "records": "رکورد",
+    "debugInfo": "اطلاعات دیباگ"
   },
   "expenses": {
     "title": "مدیریت هزینه‌ها",
@@ -130,7 +135,7 @@
       "general": "عمومی"
     }
   },
-  "transactions": {
+   "transactions": {
     "title": "همه تراکنش‌ها",
     "description": "همه تراکنش‌های مالی خود را مدیریت و بررسی کنید",
     "all": "همه تراکنش‌ها",
@@ -147,7 +152,11 @@
     "dateRange": "بازه تاریخ",
     "clearFilters": "پاک کردن فیلترها",
     "export": "خروجی به CSV",
-    "noTransactions": "تراکنشی یافت نشد"
+    "noTransactions": "تراکنشی یافت نشد",
+    "totalTransactions": "کل تراکنش‌ها",
+    "history": "تاریخچه تراکنش‌ها",
+    "general": "عمومی",
+    "tryAdjustingFilters": "فیلترهای خود را تنظیم کنید یا تراکنش جدیدی اضافه کنید"
   },
   "budget": {
     "title": "مدیریت بودجه",
@@ -185,18 +194,48 @@
     "totalSaved": "کل ذخیره شده",
     "completionRate": "نرخ تکمیل"
   },
-  "profile": {
+   "profile": {
     "title": "تنظیمات پروفایل",
     "description": "تنظیمات حساب کاربری و ترجیحات خود را مدیریت کنید",
     "personalInfo": "اطلاعات شخصی",
-    "changePassword": "تغییر رمز عبور",
     "security": "امنیت",
-    "dataManagement": "مدیریت داده",
+    "firstName": "نام",
+    "lastName": "نام خانوادگی",
+    "email": "آدرس ایمیل",
+    "emailCannotChange": "ایمیل قابل تغییر نیست",
+    "accountStatus": "وضعیت حساب",
     "currentPassword": "رمز عبور فعلی",
     "newPassword": "رمز عبور جدید",
-    "confirmNewPassword": "تکرار رمز عبور جدید",
-    "updatePhoto": "بروزرسانی عکس",
-    "accountStatus": "وضعیت حساب"
+    "enterCurrentPassword": "رمز عبور فعلی را وارد کنید",
+    "enterNewPassword": "رمز عبور جدید را وارد کنید (حداقل ۶ کاراکتر)",
+    "updatePassword": "بروزرسانی رمز عبور"
+  },
+   "analytics": {
+    "title": "تحلیل‌های مالی",
+    "description": "بینش عمیق در مورد عملکرد مالی شما",
+    "totalIncome": "کل درآمد",
+    "totalExpenses": "کل هزینه‌ها",
+    "netSavings": "پس‌انداز خالص",
+    "savingsRate": "نرخ پس‌انداز",
+    "income": "درآمد",
+    "expenses": "هزینه‌ها",
+    "savings": "پس‌انداز",
+    "month": "ماه",
+    "incomeVsExpenses": "درآمد در مقابل هزینه‌ها در طول زمان",
+    "incomeCategories": "دسته‌بندی‌های درآمد",
+    "expenseCategories": "دسته‌بندی‌های هزینه",
+    "monthlyBreakdown": "تجزیه و تحلیل ماهانه",
+    "last3Months": "۳ ماه گذشته",
+    "last6Months": "۶ ماه گذشته",
+    "lastYear": "سال گذشته",
+    "last2Years": "۲ سال گذشته",
+    "exportReport": "خروجی گزارش",
+    "line": "خطی",
+    "bar": "میله‌ای",
+    "otherIncome": "سایر درآمدها",
+    "general": "عمومی",
+    "noIncomeData": "داده درآمدی موجود نیست",
+    "noExpenseData": "داده هزینه‌ای موجود نیست"
   },
   "settings": {
     "title": "تنظیمات",
@@ -267,7 +306,9 @@
     "budgetDeleted": "بودجه با موفقیت حذف شد!",
     "goalCreated": "هدف با موفقیت ایجاد شد!",
     "goalUpdated": "هدف با موفقیت بروزرسانی شد!",
-    "savingsAdded": "پس‌انداز با موفقیت افزوده شد!"
+    "savingsAdded": "پس‌انداز با موفقیت افزوده شد!",
+    "updateFailed": "بروزرسانی ناموفق بود",
+    "passwordChangeFailed": "تغییر رمز عبور ناموفق بود"
   },
   "validation": {
     "required": "این فیلد الزامی است",

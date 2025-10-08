@@ -39,7 +39,9 @@
     "adding": "Adding...",
     "noDate": "No date",
     "noDescription": "No description",
-    "records": "records"
+    "view": "View",
+    "records": "records",
+    "changes": "Changes"
   },
   "auth": {
     "login": "Login",
@@ -92,7 +94,7 @@
     "financialHealth": "Financial Health",
     "savingsRate": "Savings Rate"
   },
-  "income": {
+"income": {
     "title": "Income Management",
     "description": "Track and manage your income sources",
     "addNew": "Add New Income",
@@ -105,7 +107,10 @@
     "category": "Category",
     "type": "Type",
     "recurring": "Recurring",
-    "oneTime": "One Time"
+    "oneTime": "One Time",
+    "totalIncome": "Total Income",
+    "records": "record(s)",
+    "debugInfo": "Debug Info"
   },
   "expenses": {
     "title": "Expense Management",
@@ -133,7 +138,7 @@
       "general": "General"
     }
   },
-  "transactions": {
+   "transactions": {
     "title": "All Transactions",
     "description": "Manage and review all your financial transactions",
     "all": "All Transactions",
@@ -150,7 +155,11 @@
     "dateRange": "Date Range",
     "clearFilters": "Clear Filters",
     "export": "Export to CSV",
-    "noTransactions": "No transactions found"
+    "noTransactions": "No transactions found",
+    "totalTransactions": "Total Transactions",
+    "history": "Transaction History",
+    "general": "General",
+    "tryAdjustingFilters": "Try adjusting your filters or add a new transaction"
   },
   "budget": {
     "title": "Budget Management",
@@ -188,18 +197,48 @@
     "totalSaved": "Total Saved",
     "completionRate": "Completion Rate"
   },
-  "profile": {
+ "profile": {
     "title": "Profile Settings",
     "description": "Manage your account settings and preferences",
     "personalInfo": "Personal Information",
-    "changePassword": "Change Password",
     "security": "Security",
-    "dataManagement": "Data Management",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "emailCannotChange": "Email cannot be changed",
+    "accountStatus": "Account Status",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
-    "confirmNewPassword": "Confirm New Password",
-    "updatePhoto": "Update Photo",
-    "accountStatus": "Account Status"
+    "enterCurrentPassword": "Enter current password",
+    "enterNewPassword": "Enter new password (min. 6 characters)",
+    "updatePassword": "Update Password"
+  },
+   "analytics": {
+    "title": "Financial Analytics",
+    "description": "Deep insights into your financial performance",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "netSavings": "Net Savings",
+    "savingsRate": "Savings Rate",
+    "income": "Income",
+    "expenses": "Expenses",
+    "savings": "Savings",
+    "month": "Month",
+    "incomeVsExpenses": "Income vs Expenses Over Time",
+    "incomeCategories": "Income Categories",
+    "expenseCategories": "Expense Categories",
+    "monthlyBreakdown": "Monthly Breakdown",
+    "last3Months": "Last 3 Months",
+    "last6Months": "Last 6 Months",
+    "lastYear": "Last Year",
+    "last2Years": "Last 2 Years",
+    "exportReport": "Export Report",
+    "line": "Line",
+    "bar": "Bar",
+    "otherIncome": "Other Income",
+    "general": "General",
+    "noIncomeData": "No income data available",
+    "noExpenseData": "No expense data available"
   },
   "settings": {
     "title": "Settings",
@@ -270,7 +309,9 @@
     "budgetDeleted": "Budget deleted successfully!",
     "goalCreated": "Goal created successfully!",
     "goalUpdated": "Goal updated successfully!",
-    "savingsAdded": "Savings added successfully!"
+    "savingsAdded": "Savings added successfully!",
+    "updateFailed": "Update failed",
+    "passwordChangeFailed": "Failed to change password"
     
   },
   "validation": {
