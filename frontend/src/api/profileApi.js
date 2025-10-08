@@ -19,3 +19,8 @@ export const changePassword = async (passwords) => {
     const { data } = await apiClient.put('/profile/change-password', passwords);
     return data;
 };
+
+export const updateSettings = async (settings) => {
+    const { data } = await apiClient.put('/profile/settings', settings);
+    return data;
+};

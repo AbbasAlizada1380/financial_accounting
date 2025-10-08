@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { Save, Bell, Shield, CreditCard, Globe, Database, Download, Upload } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { Save, Bell, Shield, CreditCard, Globe, Database, Download, Upload, Languages, Calendar, Clock, DollarSign } from 'lucide-react';
 
 const SettingsPage = () => {
     const [activeTab, setActiveTab] = useState('general');
     const [isLoading, setIsLoading] = useState(false);
+    const { t, language, changeLanguage } = useLanguage();
 
     const generalForm = useForm({
         defaultValues: {
             currency: 'USD',
             dateFormat: 'MM/DD/YYYY',
-            language: 'en',
+            language: language,
             timezone: 'UTC'
         }
     });
@@ -36,47 +38,85 @@ const SettingsPage = () => {
 
     const onGeneralSubmit = async (data) => {
         setIsLoading(true);
+        // Update language if changed
+        if (data.language !== language) {
+            changeLanguage(data.language);
+        }
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
-        toast.success('General settings updated successfully!');
+        toast.success(t('common.saved'));
         setIsLoading(false);
     };
 
     const onNotificationsSubmit = async (data) => {
         setIsLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        toast.success('Notification settings updated successfully!');
+        toast.success(t('common.saved'));
         setIsLoading(false);
     };
 
     const onSecuritySubmit = async (data) => {
         setIsLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        toast.success('Security settings updated successfully!');
+        toast.success(t('common.saved'));
         setIsLoading(false);
     };
 
     const handleExportData = () => {
-        toast.success('Data export started. You will receive an email shortly.');
+        toast.success(t('settings.exportStarted'));
     };
 
     const handleImportData = () => {
-        toast.success('Please check your email for import instructions.');
+        toast.success(t('settings.importInstructions'));
+    };
+
+    const handleDeleteAccount = () => {
+        if (window.confirm(t('settings.deleteConfirm'))) {
+            toast.error(t('settings.deleteNotImplemented'));
+        }
     };
 
     const tabs = [
-        { id: 'general', name: 'General', icon: <Globe size={18} /> },
-        { id: 'notifications', name: 'Notifications', icon: <Bell size={18} /> },
-        { id: 'security', name: 'Security', icon: <Shield size={18} /> },
-        { id: 'data', name: 'Data Management', icon: <Database size={18} /> },
+        { id: 'general', name: t('settings.general'), icon: <Globe size={18} /> },
+        { id: 'notifications', name: t('settings.notifications'), icon: <Bell size={18} /> },
+        { id: 'security', name: t('settings.security'), icon: <Shield size={18} /> },
+        { id: 'data', name: t('settings.data'), icon: <Database size={18} /> },
+    ];
+
+    const currencies = [
+        { value: 'USD', label: 'US Dollar (USD)' },
+        { value: 'EUR', label: 'Euro (EUR)' },
+        { value: 'GBP', label: 'British Pound (GBP)' },
+        { value: 'JPY', label: 'Japanese Yen (JPY)' },
+        { value: 'IRR', label: 'Iranian Rial (IRR)' }
+    ];
+
+    const dateFormats = [
+        { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
+        { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },
+        { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+        { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' }
+    ];
+
+    const timezones = [
+        { value: 'UTC', label: 'UTC' },
+        { value: 'EST', label: 'Eastern Time (EST)' },
+        { value: 'PST', label: 'Pacific Time (PST)' },
+        { value: 'CET', label: 'Central European Time (CET)' },
+        { value: 'IRT', label: 'Iran Time (IRT)' }
+    ];
+
+    const languages = [
+        { value: 'en', label: 'English' },
+        { value: 'fa', label: 'فارسی (Persian)' }
     ];
 
     return (
         <div className="max-w-6xl mx-auto space-y-8">
             {/* Header */}
             <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-                <p className="text-gray-600 mt-2">Manage your application preferences and security settings</p>
+                <h1 className="text-3xl font-bold text-gray-900">{t('settings.title')}</h1>
+                <p className="text-gray-600 mt-2">{t('settings.description')}</p>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -105,57 +145,74 @@ const SettingsPage = () => {
                     {activeTab === 'general' && (
                         <form onSubmit={generalForm.handleSubmit(onGeneralSubmit)} className="space-y-6 max-w-2xl">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">General Preferences</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('settings.general')} {t('settings.preferences')}</h3>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                                        <select
-                                            {...generalForm.register('currency')}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        >
-                                            <option value="USD">US Dollar (USD)</option>
-                                            <option value="EUR">Euro (EUR)</option>
-                                            <option value="GBP">British Pound (GBP)</option>
-                                            <option value="JPY">Japanese Yen (JPY)</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
-                                        <select
-                                            {...generalForm.register('dateFormat')}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        >
-                                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <Languages size={16} />
+                                                {t('settings.language')}
+                                            </div>
+                                        </label>
                                         <select
                                             {...generalForm.register('language')}
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         >
-                                            <option value="en">English</option>
-                                            <option value="es">Spanish</option>
-                                            <option value="fr">French</option>
-                                            <option value="de">German</option>
+                                            {languages.map(lang => (
+                                                <option key={lang.value} value={lang.value}>{lang.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <DollarSign size={16} />
+                                                {t('settings.currency')}
+                                            </div>
+                                        </label>
+                                        <select
+                                            {...generalForm.register('currency')}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        >
+                                            {currencies.map(currency => (
+                                                <option key={currency.value} value={currency.value}>{currency.label}</option>
+                                            ))}
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar size={16} />
+                                                {t('settings.dateFormat')}
+                                            </div>
+                                        </label>
+                                        <select
+                                            {...generalForm.register('dateFormat')}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        >
+                                            {dateFormats.map(format => (
+                                                <option key={format.value} value={format.value}>{format.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <Clock size={16} />
+                                                {t('settings.timezone')}
+                                            </div>
+                                        </label>
                                         <select
                                             {...generalForm.register('timezone')}
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         >
-                                            <option value="UTC">UTC</option>
-                                            <option value="EST">Eastern Time</option>
-                                            <option value="PST">Pacific Time</option>
-                                            <option value="CET">Central European Time</option>
+                                            {timezones.map(tz => (
+                                                <option key={tz.value} value={tz.value}>{tz.label}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -167,7 +224,7 @@ const SettingsPage = () => {
                                 className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 transition-colors font-semibold"
                             >
                                 <Save size={18} />
-                                Save General Settings
+                                {t('common.save')} {t('settings.general')} {t('settings.settings')}
                             </button>
                         </form>
                     )}
@@ -176,15 +233,15 @@ const SettingsPage = () => {
                     {activeTab === 'notifications' && (
                         <form onSubmit={notificationsForm.handleSubmit(onNotificationsSubmit)} className="space-y-6 max-w-2xl">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Notification Preferences</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('settings.notifications')} {t('settings.preferences')}</h3>
                                 
                                 <div className="space-y-4">
                                     {[
-                                        { name: 'emailNotifications', label: 'Email Notifications', description: 'Receive important updates via email' },
-                                        { name: 'pushNotifications', label: 'Push Notifications', description: 'Get real-time alerts in your browser' },
-                                        { name: 'monthlyReports', label: 'Monthly Reports', description: 'Receive monthly financial summary reports' },
-                                        { name: 'largeTransactions', label: 'Large Transactions', description: 'Alert for transactions above $1,000' },
-                                        { name: 'budgetAlerts', label: 'Budget Alerts', description: 'Notify when approaching budget limits' },
+                                        { name: 'emailNotifications', label: t('settings.emailNotifications'), description: t('settings.emailNotificationsDesc') },
+                                        { name: 'pushNotifications', label: t('settings.pushNotifications'), description: t('settings.pushNotificationsDesc') },
+                                        { name: 'monthlyReports', label: t('settings.monthlyReports'), description: t('settings.monthlyReportsDesc') },
+                                        { name: 'largeTransactions', label: t('settings.largeTransactions'), description: t('settings.largeTransactionsDesc') },
+                                        { name: 'budgetAlerts', label: t('settings.budgetAlerts'), description: t('settings.budgetAlertsDesc') },
                                     ].map((setting) => (
                                         <div key={setting.name} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                             <div>
@@ -210,7 +267,7 @@ const SettingsPage = () => {
                                 className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 transition-colors font-semibold"
                             >
                                 <Save size={18} />
-                                Save Notification Settings
+                                {t('common.save')} {t('settings.notifications')} {t('settings.settings')}
                             </button>
                         </form>
                     )}
@@ -219,13 +276,13 @@ const SettingsPage = () => {
                     {activeTab === 'security' && (
                         <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-6 max-w-2xl">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('settings.security')} {t('settings.settings')}</h3>
                                 
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                         <div>
-                                            <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-                                            <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                                            <p className="font-medium text-gray-900">{t('settings.twoFactorAuth')}</p>
+                                            <p className="text-sm text-gray-500">{t('settings.twoFactorAuthDesc')}</p>
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input
@@ -239,23 +296,23 @@ const SettingsPage = () => {
 
                                     <div className="p-4 border border-gray-200 rounded-lg">
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Session Timeout (minutes)
+                                            {t('settings.sessionTimeout')}
                                         </label>
                                         <select
                                             {...securityForm.register('sessionTimeout')}
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         >
-                                            <option value="15">15 minutes</option>
-                                            <option value="30">30 minutes</option>
-                                            <option value="60">1 hour</option>
-                                            <option value="120">2 hours</option>
+                                            <option value="15">15 {t('settings.minutes')}</option>
+                                            <option value="30">30 {t('settings.minutes')}</option>
+                                            <option value="60">1 {t('settings.hour')}</option>
+                                            <option value="120">2 {t('settings.hours')}</option>
                                         </select>
                                     </div>
 
                                     <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                         <div>
-                                            <p className="font-medium text-gray-900">Login Alerts</p>
-                                            <p className="text-sm text-gray-500">Get notified of new sign-ins to your account</p>
+                                            <p className="font-medium text-gray-900">{t('settings.loginAlerts')}</p>
+                                            <p className="text-sm text-gray-500">{t('settings.loginAlertsDesc')}</p>
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input
@@ -275,7 +332,7 @@ const SettingsPage = () => {
                                 className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 transition-colors font-semibold"
                             >
                                 <Save size={18} />
-                                Save Security Settings
+                                {t('common.save')} {t('settings.security')} {t('settings.settings')}
                             </button>
                         </form>
                     )}
@@ -284,15 +341,15 @@ const SettingsPage = () => {
                     {activeTab === 'data' && (
                         <div className="space-y-6 max-w-2xl">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Management</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('settings.data')} {t('settings.management')}</h3>
                                 
                                 <div className="space-y-4">
                                     <div className="p-6 border border-gray-200 rounded-lg">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h4 className="font-semibold text-gray-900">Export Data</h4>
+                                                <h4 className="font-semibold text-gray-900">{t('settings.exportData')}</h4>
                                                 <p className="text-sm text-gray-500 mt-1">
-                                                    Download all your transactions and account data in CSV format
+                                                    {t('settings.exportDataDesc')}
                                                 </p>
                                             </div>
                                             <button
@@ -300,7 +357,7 @@ const SettingsPage = () => {
                                                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
                                             >
                                                 <Download size={18} />
-                                                Export Data
+                                                {t('common.export')}
                                             </button>
                                         </div>
                                     </div>
@@ -308,9 +365,9 @@ const SettingsPage = () => {
                                     <div className="p-6 border border-gray-200 rounded-lg">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h4 className="font-semibold text-gray-900">Import Data</h4>
+                                                <h4 className="font-semibold text-gray-900">{t('settings.importData')}</h4>
                                                 <p className="text-sm text-gray-500 mt-1">
-                                                    Upload transaction data from other financial applications
+                                                    {t('settings.importDataDesc')}
                                                 </p>
                                             </div>
                                             <button
@@ -318,7 +375,7 @@ const SettingsPage = () => {
                                                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
                                             >
                                                 <Upload size={18} />
-                                                Import Data
+                                                {t('common.import')}
                                             </button>
                                         </div>
                                     </div>
@@ -326,13 +383,16 @@ const SettingsPage = () => {
                                     <div className="p-6 border border-red-200 rounded-lg bg-red-50">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h4 className="font-semibold text-red-900">Delete Account</h4>
+                                                <h4 className="font-semibold text-red-900">{t('settings.deleteAccount')}</h4>
                                                 <p className="text-sm text-red-700 mt-1">
-                                                    Permanently delete your account and all associated data
+                                                    {t('settings.deleteAccountDesc')}
                                                 </p>
                                             </div>
-                                            <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold">
-                                                Delete Account
+                                            <button 
+                                                onClick={handleDeleteAccount}
+                                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold"
+                                            >
+                                                {t('settings.deleteAccount')}
                                             </button>
                                         </div>
                                     </div>

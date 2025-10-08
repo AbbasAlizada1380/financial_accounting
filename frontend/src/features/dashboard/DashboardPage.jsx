@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getTransactions } from '../../api/transactionsApi';
 import { useSelector } from 'react-redux';
-import { Loader2, TrendingUp, TrendingDown, Scale, ArrowRight, Calendar, Wallet, PieChart } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, TrendingUp, TrendingDown, Scale, ArrowRight, Calendar, Wallet, Plus, PieChart as PieChartIcon } from 'lucide-react';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
@@ -14,7 +16,7 @@ const StatCard = ({ title, value, change, icon, color, gradient }) => (
         <div className="flex items-center justify-between">
             <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-                <p className="text-3xl font-bold text-gray-900">${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="text-2xl font-bold text-gray-900">{value}</p>
                 {change !== undefined && change !== null && (
                     <div className={`flex items-center mt-2 text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         <TrendingUp size={16} className={change >= 0 ? '' : 'hidden'} />
@@ -46,8 +48,10 @@ const QuickAction = ({ icon, title, description, color, onClick }) => (
 
 const DashboardPage = () => {
     const user = useSelector(state => state.user.currentUser);
+    const { t } = useLanguage();
+    const navigate = useNavigate();
 
-    const { data: transactions, isLoading, error } = useQuery({
+    const { data: transactions, isLoading } = useQuery({
         queryKey: ['transactions'],
         queryFn: () => getTransactions('all'),
     });
@@ -222,31 +226,31 @@ const DashboardPage = () => {
     const quickActions = [
         {
             icon: <TrendingUp size={24} />,
-            title: 'Add Income',
-            description: 'Record new income',
+            title: t('dashboard.addIncome'),
+            description: t('income.descriptionPlaceholder'),
             color: 'bg-green-500',
-            path: '/income'
+            onClick: () => navigate('/income')
         },
         {
             icon: <TrendingDown size={24} />,
-            title: 'Add Expense',
-            description: 'Record new expense',
+            title: t('dashboard.addExpense'),
+            description: t('expenses.descriptionPlaceholder'),
             color: 'bg-red-500',
-            path: '/expenses'
+            onClick: () => navigate('/expenses')
         },
         {
-            icon: <PieChart size={24} />,
-            title: 'View Reports',
-            description: 'Detailed analytics',
+            icon: <PieChartIcon size={24} />,
+            title: t('dashboard.viewReports'),
+            description: t('sidebar.analytics'),
             color: 'bg-blue-500',
-            path: '/reports'
+            onClick: () => navigate('/reports')
         },
         {
             icon: <Calendar size={24} />,
-            title: 'Schedule',
+            title: t('dashboard.schedule'),
             description: 'Recurring transactions',
             color: 'bg-purple-500',
-            path: '/schedule'
+            onClick: () => navigate('/settings')
         }
     ];
 
@@ -255,21 +259,7 @@ const DashboardPage = () => {
             <div className="flex justify-center items-center h-64">
                 <div className="text-center">
                     <Loader2 size={48} className="animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className="text-gray-600">Loading your financial dashboard...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="text-center">
-                    <div className="text-red-500 mb-4">
-                        <TrendingDown size={48} className="mx-auto" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Data</h3>
-                    <p className="text-gray-600">Unable to load your financial data. Please try again later.</p>
+                    <p className="text-gray-600">{t('common.loading')}</p>
                 </div>
             </div>
         );
@@ -280,8 +270,10 @@ const DashboardPage = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user?.firstName || 'User'}! 👋</h1>
-                    <p className="text-gray-600 mt-2">Here's your financial overview for today</p>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                        {t('dashboard.welcome', { name: user?.firstName || t('common.user') })} 👋
+                    </h1>
+                    <p className="text-gray-600 mt-2">{t('dashboard.overview')}</p>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Calendar size={16} />
@@ -292,30 +284,30 @@ const DashboardPage = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard 
-                    title="Total Income" 
-                    value={stats.totalIncome} 
+                    title={t('dashboard.totalIncome')} 
+                    value={`$${stats.totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
                     change={monthlyComparison?.incomeChange}
                     icon={<TrendingUp size={24} />}
                     color="bg-green-500"
                     gradient="bg-gradient-to-br from-green-50 to-white"
                 />
                 <StatCard 
-                    title="Total Expenses" 
-                    value={stats.totalExpenses} 
+                    title={t('dashboard.totalExpenses')} 
+                    value={`$${stats.totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
                     change={monthlyComparison?.expenseChange}
                     icon={<TrendingDown size={24} />}
                     color="bg-red-500"
                     gradient="bg-gradient-to-br from-red-50 to-white"
                 />
                 <StatCard 
-                    title="Current Balance" 
-                    value={stats.balance} 
+                    title={t('dashboard.currentBalance')} 
+                    value={`$${stats.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
                     icon={<Scale size={24} />}
                     color="bg-blue-500"
                     gradient="bg-gradient-to-br from-blue-50 to-white"
                 />
                 <StatCard 
-                    title="Total Transactions" 
+                    title={t('dashboard.totalTransactions')} 
                     value={stats.transactionsCount} 
                     icon={<Wallet size={24} />}
                     color="bg-purple-500"
@@ -325,7 +317,7 @@ const DashboardPage = () => {
 
             {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('dashboard.quickActions')}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {quickActions.map((action, index) => (
                         <QuickAction key={index} {...action} />
@@ -372,7 +364,7 @@ const DashboardPage = () => {
                             <div className="flex items-center justify-center h-full">
                                 <div className="text-center text-gray-500">
                                     <TrendingUp size={48} className="mx-auto mb-4 text-gray-300" />
-                                    <p>No transaction data available</p>
+                                    <p>{t('common.noData')}</p>
                                     <p className="text-sm">Start adding transactions to see charts</p>
                                 </div>
                             </div>
@@ -407,7 +399,7 @@ const DashboardPage = () => {
                         ) : (
                             <div className="flex items-center justify-center h-full">
                                 <div className="text-center text-gray-500">
-                                    <PieChart size={48} className="mx-auto mb-4 text-gray-300" />
+                                    <PieChartIcon size={48} className="mx-auto mb-4 text-gray-300" />
                                     <p>No expense data to display</p>
                                     <p className="text-sm">Add expenses to see category breakdown</p>
                                 </div>
@@ -419,16 +411,17 @@ const DashboardPage = () => {
 
             {/* Recent Transactions */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-gray-900">Recent Transactions</h2>
-                        <button className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm">
-                            View All <ArrowRight size={16} />
-                        </button>
-                    </div>
+                <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-900">{t('dashboard.recentTransactions')}</h2>
+                    <button 
+                        onClick={() => navigate('/transactions')}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm"
+                    >
+                        {t('dashboard.viewAll')} <ArrowRight size={16} />
+                    </button>
                 </div>
                 <div className="divide-y divide-gray-100">
-                    {recentTransactions?.length > 0 ? recentTransactions.map((transaction) => (
+                    {recentTransactions.length > 0 ? recentTransactions.map((transaction) => (
                         <div key={transaction.id} className="p-4 hover:bg-gray-50 transition-colors">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -457,9 +450,9 @@ const DashboardPage = () => {
                             </div>
                         </div>
                     )) : (
-                        <div className="p-8 text-center text-gray-500">
+                        <div className="p-12 text-center text-gray-500">
                             <Wallet size={48} className="mx-auto mb-4 text-gray-300" />
-                            <p>No transactions yet</p>
+                            <p className="text-lg font-medium">{t('common.noRecords')}</p>
                             <p className="text-sm">Start by adding your first income or expense</p>
                         </div>
                     )}

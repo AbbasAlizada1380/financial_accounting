@@ -18,8 +18,6 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // 3. حالا از متغیر محلی store استفاده می‌کنیم.
-    // این تابع زمانی اجرا می‌شود که یک درخواست API ارسال شود،
-    // که تا آن زمان store حتماً تزریق شده است.
     if (store) {
       const token = store.getState().user.accessToken;
       if (token) {
@@ -29,6 +27,21 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      if (store) {
+        store.dispatch({ type: 'user/logout' });
+      }
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   }
 );
