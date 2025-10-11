@@ -63,6 +63,7 @@ const RegisterPage = () => {
                     Already have an account? <Link to="/login" className="font-medium text-blue-600 hover:underline">Log in</Link>
                 </p>
             </div>
+            {/* for test  */}
         </div>
     );
 };
