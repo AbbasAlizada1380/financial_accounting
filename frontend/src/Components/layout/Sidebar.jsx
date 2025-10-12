@@ -16,10 +16,11 @@ import {
     PieChart,
     Award,
     Target,
-    Languages
+    Languages,
+    X
 } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector(state => state.user.currentUser);
@@ -33,6 +34,12 @@ const Sidebar = () => {
     const handleLanguageChange = () => {
         const newLanguage = language === 'en' ? 'fa' : 'en';
         changeLanguage(newLanguage);
+    };
+
+    const handleNavClick = () => {
+        if (window.innerWidth < 1024) {
+            onClose?.();
+        }
     };
 
     const navLinks = [
@@ -49,20 +56,30 @@ const Sidebar = () => {
     ];
 
     return (
-        <aside className="w-64 flex-shrink-0 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col transition-all duration-300 shadow-xl">
-            {/* Header */}
-            <div className="p-6 border-b border-gray-700 flex items-center justify-center gap-3">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-                    <Briefcase className="text-white" size={24} />
+        <aside className="w-64 h-full flex-shrink-0 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col transition-all duration-300 shadow-xl">
+            {/* Header with close button for mobile */}
+            <div className="p-4 border-b border-gray-700 flex items-center justify-between lg:justify-center">
+                <div className="flex items-center gap-3">
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
+                        <Briefcase className="text-white" size={24} />
+                    </div>
+                    <div className="text-center lg:text-right">
+                        <h2 className="text-xl font-bold">{t('app.name')}</h2>
+                        <p className="text-xs text-gray-400 hidden sm:block">{t('app.description')}</p>
+                    </div>
                 </div>
-                <div className="text-center">
-                    <h2 className="text-xl font-bold">{t('app.name')}</h2>
-                    <p className="text-xs text-gray-400">{t('app.description')}</p>
-                </div>
+                
+                {/* Close button for mobile */}
+                <button 
+                    onClick={onClose}
+                    className="lg:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                    <X size={20} className="text-gray-300" />
+                </button>
             </div>
             
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1">
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {navLinks.map((link) => {
                     if (link.adminOnly && user?.role !== 'admin') return null;
                     
@@ -70,6 +87,7 @@ const Sidebar = () => {
                         <NavLink
                             key={link.to}
                             to={link.to}
+                            onClick={handleNavClick}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium group ${
                                     isActive
@@ -81,7 +99,7 @@ const Sidebar = () => {
                             <div className={`transition-transform duration-200 ${link.to === '/dashboard' ? 'group-hover:scale-110' : ''}`}>
                                 {link.icon}
                             </div>
-                            <span>{link.text}</span>
+                            <span className="truncate">{link.text}</span>
                         </NavLink>
                     );
                 })}
@@ -95,12 +113,12 @@ const Sidebar = () => {
                     className="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-blue-500/10 text-blue-400 font-semibold hover:bg-blue-500/20 hover:text-blue-300 transition-all duration-200"
                 >
                     <Languages size={18} />
-                    <span>{language === 'en' ? 'فارسی' : 'English'}</span>
+                    <span className="truncate">{language === 'en' ? 'فارسی' : 'English'}</span>
                 </button>
 
                 {/* User Info */}
                 <div className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
-                    <div className="h-10 w-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div className="h-10 w-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
                         {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -114,8 +132,8 @@ const Sidebar = () => {
                     onClick={handleLogout}
                     className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-red-500/10 text-red-400 font-semibold hover:bg-red-500/20 hover:text-red-300 transition-all duration-200 group"
                 >
-                    <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-                    <span>{t('auth.logout')}</span>
+                    <LogOut size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                    <span className="truncate">{t('auth.logout')}</span>
                 </button>
             </div>
         </aside>
