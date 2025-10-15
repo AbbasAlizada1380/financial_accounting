@@ -26,7 +26,7 @@ const RegisterPage = () => {
     const password = watch('password');
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-purple-60 to-pink-100 flex items-center justify-center p-4">
             <div className="w-full max-w-2xl">
                 <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8 space-y-8">
                     <div className="text-center">
