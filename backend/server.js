@@ -47,7 +47,8 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/goals', goalRoutes);
 
-// Health check endpoint
+
+
 app.get('/api/health', (req, res) => {
     res.status(200).json({ 
         message: 'Server is running', 
@@ -60,17 +61,13 @@ app.get('/api/health', (req, res) => {
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
-
 const PORT = process.env.PORT || 5000;
-
-// Database connection and model synchronization
 const startServer = async () => {
     try {
         await db.authenticate();
         console.log('MySQL Database Connected...');
 
-        // Sync all models with the database
-        await db.sync({ alter: false }); // Changed to false for production
+        await db.sync({ alter: false }); 
         console.log('All models were synchronized successfully.');
 
         app.listen(PORT, '0.0.0.0', () => {
