@@ -185,6 +185,7 @@ const RegisterPage = () => {
                             >
                                 Log in
                             </Link>
+                            {/* for test inthe  */}
                         </p>
                     </div>
                 </div>
