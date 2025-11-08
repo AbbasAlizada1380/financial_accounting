@@ -185,6 +185,7 @@ const RegisterPage = () => {
                             >
                                 Log in
                             </Link>
+                            {/* its not for test tis for testing the github my branch */}
                         </p>
                     </div>
                 </div>
